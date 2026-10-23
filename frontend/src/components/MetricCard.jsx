@@ -6,7 +6,7 @@ export default function MetricCard({
   unit,
   subtext,
   icon: Icon,
-  accentColor = "var(--accent-cyan)",
+  accentColor = "var(--col-wind-da)",
   badgeText,
   badgeType = "neutral"
 }) {
@@ -14,15 +14,14 @@ export default function MetricCard({
     <div className="metric-card">
       <div className="metric-header">
         <span className="metric-label">{label}</span>
-        <div
-          className="metric-icon-wrap"
-          style={{ background: `${accentColor}18`, color: accentColor }}
-        >
-          {Icon && <Icon size={18} />}
-        </div>
+        {Icon && (
+          <div style={{ color: accentColor }}>
+            <Icon size={16} />
+          </div>
+        )}
       </div>
       <div className="metric-value">
-        {value} {unit && <span style={{ fontSize: "16px", color: "var(--text-muted)", fontWeight: 500 }}>{unit}</span>}
+        {value} {unit && <span style={{ fontSize: "14px", color: "var(--text-muted)", fontWeight: 400 }}>{unit}</span>}
       </div>
       <div className="metric-footer">
         {badgeText && (

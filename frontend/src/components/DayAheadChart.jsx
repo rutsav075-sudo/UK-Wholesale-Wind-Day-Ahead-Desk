@@ -9,52 +9,53 @@ import {
   Tooltip,
   Legend,
   CartesianGrid,
-  ReferenceLine
+  ReferenceLine,
+  Cell
 } from "recharts"
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
     return (
       <div style={{
-        background: "rgba(15, 23, 42, 0.95)",
+        background: "var(--bg-panel)",
         border: "1px solid var(--border-strong)",
-        borderRadius: "8px",
-        padding: "12px 16px",
-        boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
+        borderRadius: "4px",
+        padding: "10px 14px",
         fontSize: "12px",
-        minWidth: "220px"
+        minWidth: "220px",
+        color: "var(--text-main)"
       }}>
-        <div style={{ fontWeight: 700, color: "#fff", marginBottom: "6px", borderBottom: "1px solid var(--border-subtle)", paddingBottom: "4px" }}>
+        <div style={{ fontWeight: 600, borderBottom: "1px solid var(--border-subtle)", paddingBottom: "4px", marginBottom: "6px" }}>
           SP {data.settlementPeriod} • {data.timeLabel} GMT
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", color: "#10b981", margin: "3px 0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--col-wind-act)", margin: "2px 0" }}>
           <span>Actual Wind:</span>
-          <strong>{data.actualMW?.toLocaleString()} MW</strong>
+          <strong className="mono">{data.actualMW?.toLocaleString()} MW</strong>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", color: "#06b6d4", margin: "3px 0" }}>
-          <span>Day-Ahead Forecast:</span>
-          <strong>{data.dayAheadForecastMW?.toLocaleString()} MW</strong>
+        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--col-wind-da)", margin: "2px 0" }}>
+          <span>DA Forecast (@ Gate):</span>
+          <strong className="mono">{data.dayAheadForecastMW?.toLocaleString()} MW</strong>
         </div>
-        {data.latestForecastMW && (
-          <div style={{ display: "flex", justifyContent: "space-between", color: "#8b5cf6", margin: "3px 0" }}>
+        {data.latestForecastMW !== null && (
+          <div style={{ display: "flex", justifyContent: "space-between", color: "var(--col-wind-latest)", margin: "2px 0" }}>
             <span>Latest Forecast:</span>
-            <strong>{data.latestForecastMW?.toLocaleString()} MW</strong>
+            <strong className="mono">{data.latestForecastMW?.toLocaleString()} MW</strong>
           </div>
         )}
         <div style={{
           display: "flex",
           justifyContent: "space-between",
-          color: data.errorMW > 0 ? "#f59e0b" : "#34d399",
+          color: data.errorMW > 0 ? "var(--col-over-risk)" : "var(--col-surplus)",
           marginTop: "6px",
           paddingTop: "4px",
           borderTop: "1px solid var(--border-subtle)"
         }}>
           <span>Forecast Error (DA - Act):</span>
-          <strong>{data.errorMW > 0 ? `+${data.errorMW}` : data.errorMW} MW</strong>
+          <strong className="mono">{data.errorMW > 0 ? `+${data.errorMW}` : data.errorMW} MW</strong>
         </div>
-        <div style={{ fontSize: "11px", color: "var(--text-dim)", marginTop: "4px" }}>
-          {data.errorMW > 0 ? "Over-forecast (Procurement Deficit Risk)" : "Under-forecast (Generation Surplus)"}
+        <div style={{ fontSize: "11px", color: "var(--text-dim)", marginTop: "2px" }}>
+          {data.errorMW > 0 ? "Over-forecast (Procurement Deficit)" : "Under-forecast (Procurement Surplus)"}
         </div>
       </div>
     )
@@ -106,13 +107,13 @@ export default function DayAheadChart({ records, viewMode, onSelectPeriod, selec
     <div className="card">
       <div className="card-title-row">
         <div>
-          <h2 className="card-title">Day-Ahead Renewable Generation Forecast vs Actuals</h2>
+          <h2 className="card-title">Day-Ahead Renewable Generation Forecast vs Metered Actuals</h2>
           <p className="card-description">
-            Comparing Elexon Day-Ahead forecast locked at decision gate with actual metered settlement period generation
+            Elexon WINDFOR forecast published prior to day-ahead auction gate vs actual FUELHH settlement generation
           </p>
         </div>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          <span className="badge badge-neutral">Interactive • Click point to inspect evolution</span>
+          <span className="badge badge-neutral">Click period to trace evolution</span>
         </div>
       </div>
 
@@ -127,7 +128,7 @@ export default function DayAheadChart({ records, viewMode, onSelectPeriod, selec
               }
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+            <CartesianGrid strokeDasharray="2 2" stroke="var(--border-subtle)" vertical={false} />
             <XAxis
               dataKey="timeLabel"
               stroke="var(--text-dim)"
@@ -149,47 +150,53 @@ export default function DayAheadChart({ records, viewMode, onSelectPeriod, selec
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 12, fontSize: 12 }} />
-            <ReferenceLine yAxisId="err" y={0} stroke="rgba(255,255,255,0.2)" strokeDasharray="2 2" />
+            <ReferenceLine yAxisId="err" y={0} stroke="var(--border-strong)" strokeDasharray="2 2" />
 
             <Bar
               yAxisId="err"
               dataKey="errorMW"
               name="Forecast Error (DA - Actual)"
-              fill="#f59e0b"
-              opacity={0.35}
-              radius={[3, 3, 0, 0]}
-            />
+              radius={[2, 2, 0, 0]}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.errorMW > 0 ? "var(--col-over-risk)" : "var(--col-surplus)"}
+                  fillOpacity={0.45}
+                />
+              ))}
+            </Bar>
             <Line
               yAxisId="gen"
               type="monotone"
               dataKey="actualMW"
               name="Actual Wind Generation (FUELHH)"
-              stroke="#10b981"
-              strokeWidth={3}
+              stroke="var(--col-wind-act)"
+              strokeWidth={2.5}
               dot={false}
-              activeDot={{ r: 6, fill: "#10b981" }}
+              activeDot={{ r: 5, fill: "var(--col-wind-act)" }}
             />
             <Line
               yAxisId="gen"
               type="monotone"
               dataKey="dayAheadForecastMW"
               name="Day-Ahead Forecast (WINDFOR @ Gate)"
-              stroke="#06b6d4"
-              strokeWidth={2.5}
-              strokeDasharray="4 4"
+              stroke="var(--col-wind-da)"
+              strokeWidth={2}
+              strokeDasharray="4 3"
               dot={false}
-              activeDot={{ r: 6, fill: "#06b6d4" }}
+              activeDot={{ r: 5, fill: "var(--col-wind-da)" }}
             />
             <Line
               yAxisId="gen"
               type="monotone"
               dataKey="latestForecastMW"
-              name="Latest Forecast"
-              stroke="#8b5cf6"
+              name="Latest Available Forecast"
+              stroke="var(--col-wind-latest)"
               strokeWidth={1.5}
               strokeDasharray="2 2"
               dot={false}
-              opacity={0.7}
+              opacity={0.65}
             />
           </ComposedChart>
         </ResponsiveContainer>

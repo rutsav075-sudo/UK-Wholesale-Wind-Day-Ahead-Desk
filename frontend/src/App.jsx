@@ -7,8 +7,7 @@ import {
   BarChart3,
   Calendar,
   Layers,
-  Shield,
-  HelpCircle
+  Shield
 } from "lucide-react"
 
 import Header from "./components/Header"
@@ -32,6 +31,7 @@ import {
 } from "./services/api"
 
 export default function App() {
+  const [theme, setTheme] = useState("dark")
   const [dates, setDates] = useState([])
   const [selectedDate, setSelectedDate] = useState("2026-01-05")
   const [cutoffHour, setCutoffHour] = useState(11)
@@ -53,6 +53,14 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
   const [errorMsg, setErrorMsg] = useState(null)
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === "dark" ? "light" : "dark")
+  }
 
   useEffect(() => {
     async function init() {
@@ -166,6 +174,8 @@ export default function App() {
         onViewModeChange={setViewMode}
         onSync={handleSync}
         syncing={syncing}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       <nav className="nav-tabs">
@@ -174,35 +184,35 @@ export default function App() {
           className={`nav-tab-btn ${activeTab === "trading" ? "active" : ""}`}
           onClick={() => setActiveTab("trading")}
         >
-          <TrendingUp size={15} /> Day-Ahead Desk
+          <TrendingUp size={14} /> Day-Ahead Desk
         </button>
         <button
           id="tab-analytics"
           className={`nav-tab-btn ${activeTab === "analytics" ? "active" : ""}`}
           onClick={() => setActiveTab("analytics")}
         >
-          <BarChart3 size={15} /> Quantitative Accuracy
+          <BarChart3 size={14} /> Quantitative Accuracy
         </button>
         <button
           id="tab-procurement"
           className={`nav-tab-btn ${activeTab === "procurement" ? "active" : ""}`}
           onClick={() => setActiveTab("procurement")}
         >
-          <Zap size={15} /> Thermal Plant Hedge Tool
+          <Zap size={14} /> Thermal Plant Hedge Tool
         </button>
         <button
           id="tab-evolution"
           className={`nav-tab-btn ${activeTab === "evolution" ? "active" : ""}`}
           onClick={() => setActiveTab("evolution")}
         >
-          <Layers size={15} /> Forecast Evolution
+          <Layers size={14} /> Forecast Evolution
         </button>
         <button
           id="tab-performance"
           className={`nav-tab-btn ${activeTab === "performance" ? "active" : ""}`}
           onClick={() => setActiveTab("performance")}
         >
-          <Calendar size={15} /> January 2026 Audit
+          <Calendar size={14} /> January 2026 Audit
         </button>
       </nav>
 
@@ -211,9 +221,9 @@ export default function App() {
           label="Mean Absolute Error (MAE)"
           value={metrics.mae ? metrics.mae.toLocaleString() : "-"}
           unit="MW"
-          subtext={`Monthly Average: ${overall.mae ? overall.mae.toLocaleString() : "-"} MW`}
+          subtext={`Monthly Baseline: ${overall.mae ? overall.mae.toLocaleString() : "-"} MW`}
           icon={Activity}
-          accentColor="var(--accent-cyan)"
+          accentColor="var(--col-wind-da)"
           badgeText={metrics.wape ? `${metrics.wape}% WAPE` : undefined}
           badgeType={metrics.wape < 15 ? "positive" : "warning"}
         />
@@ -223,8 +233,8 @@ export default function App() {
           unit="MW"
           subtext={`Jan 2026 Aggregate: ${overall.rmse ? overall.rmse.toLocaleString() : "-"} MW`}
           icon={AlertCircle}
-          accentColor="var(--accent-rose)"
-          badgeText="Penalty Volatility"
+          accentColor="var(--col-over-risk)"
+          badgeText="Variance Penalty"
           badgeType="neutral"
         />
         <MetricCard
@@ -233,7 +243,7 @@ export default function App() {
           unit="MW"
           subtext={metrics.bias > 0 ? "Tendency to Over-Forecast" : "Tendency to Under-Forecast"}
           icon={TrendingUp}
-          accentColor={metrics.bias > 0 ? "var(--accent-amber)" : "var(--accent-emerald)"}
+          accentColor={metrics.bias > 0 ? "var(--col-over-risk)" : "var(--col-wind-act)"}
           badgeText={metrics.overForecastRatio ? `${metrics.overForecastRatio}% Over` : undefined}
           badgeType={metrics.overForecastRatio > 60 ? "warning" : "positive"}
         />
@@ -241,19 +251,19 @@ export default function App() {
           label="Forecast Correlation (r)"
           value={metrics.correlation ? metrics.correlation : "-"}
           unit=""
-          subtext="Correlation with Met Office / Elexon actuals"
+          subtext="Covariance with metered actuals"
           icon={BarChart3}
-          accentColor="var(--accent-purple)"
-          badgeText="Pattern Tracking"
+          accentColor="var(--col-wind-latest)"
+          badgeText="Tracking"
           badgeType="positive"
         />
         <MetricCard
           label="Thermal Procurement Buffer"
           value={simData?.recommendedBufferMW ? `+${simData.recommendedBufferMW.toLocaleString()}` : "-"}
           unit="MW"
-          subtext={`At ${(simConfidence * 100).toFixed(0)}% Confidence Level`}
+          subtext={`At ${(simConfidence * 100).toFixed(0)}% Confidence Target`}
           icon={Shield}
-          accentColor="var(--accent-amber)"
+          accentColor="var(--col-thermal)"
           badgeText="P90 Risk Hedge"
           badgeType="warning"
         />

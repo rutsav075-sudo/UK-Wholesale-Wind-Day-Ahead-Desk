@@ -10,59 +10,60 @@ import {
   Legend,
   CartesianGrid
 } from "recharts"
-import { ShieldCheck, AlertTriangle, Zap, Sliders } from "lucide-react"
+import { ShieldCheck, Zap, Sliders } from "lucide-react"
 
 const CustomProcureTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
     return (
       <div style={{
-        background: "rgba(15, 23, 42, 0.95)",
+        background: "var(--bg-panel)",
         border: "1px solid var(--border-strong)",
-        borderRadius: "8px",
-        padding: "12px 16px",
+        borderRadius: "4px",
+        padding: "10px 14px",
         fontSize: "12px",
-        minWidth: "240px"
+        minWidth: "240px",
+        color: "var(--text-main)"
       }}>
-        <div style={{ fontWeight: 700, color: "#fff", marginBottom: "6px" }}>
+        <div style={{ fontWeight: 600, borderBottom: "1px solid var(--border-subtle)", paddingBottom: "4px", marginBottom: "6px" }}>
           SP {data.settlementPeriod} • {data.startTime.slice(11, 16)} GMT
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", color: "#94a3b8", margin: "2px 0" }}>
-          <span>Consumer Demand:</span>
-          <strong>{data.demandMW?.toLocaleString()} MW</strong>
+        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--col-demand)", margin: "2px 0" }}>
+          <span>Customer Demand:</span>
+          <strong className="mono">{data.demandMW?.toLocaleString()} MW</strong>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", color: "#06b6d4", margin: "2px 0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--col-wind-da)", margin: "2px 0" }}>
           <span>Wind Forecast:</span>
-          <strong>{data.windForecastMW?.toLocaleString()} MW</strong>
+          <strong className="mono">{data.windForecastMW?.toLocaleString()} MW</strong>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", color: "#10b981", margin: "2px 0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--col-wind-act)", margin: "2px 0" }}>
           <span>Actual Wind:</span>
-          <strong>{data.actualWindMW?.toLocaleString()} MW</strong>
+          <strong className="mono">{data.actualWindMW?.toLocaleString()} MW</strong>
         </div>
         <div style={{
           display: "flex",
           justifyContent: "space-between",
-          color: "#f59e0b",
+          color: "var(--col-thermal)",
           marginTop: "4px",
           paddingTop: "4px",
           borderTop: "1px solid var(--border-subtle)"
         }}>
-          <span>Base Thermal Needed:</span>
-          <strong>{data.baseThermalProcuredMW?.toLocaleString()} MW</strong>
+          <span>Base Thermal Order:</span>
+          <strong className="mono">{data.baseThermalProcuredMW?.toLocaleString()} MW</strong>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", color: "#fb7185", margin: "2px 0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--col-over-risk)", margin: "2px 0" }}>
           <span>Hedged Thermal (w/ Buffer):</span>
-          <strong>{data.hedgedThermalProcuredMW?.toLocaleString()} MW</strong>
+          <strong className="mono">{data.hedgedThermalProcuredMW?.toLocaleString()} MW</strong>
         </div>
         <div style={{
           display: "flex",
           justifyContent: "space-between",
-          color: data.unhedgedImbalanceMW < 0 ? "#ef4444" : "#10b981",
+          color: data.unhedgedImbalanceMW < 0 ? "var(--col-over-risk)" : "var(--col-surplus)",
           marginTop: "4px",
           fontSize: "11px"
         }}>
           <span>Unhedged Exposure:</span>
-          <strong>{data.unhedgedImbalanceMW < 0 ? `Deficit: ${Math.abs(data.unhedgedImbalanceMW)} MW` : "Covered"}</strong>
+          <strong>{data.unhedgedImbalanceMW < 0 ? `Deficit: ${Math.abs(data.unhedgedImbalanceMW)} MW` : "Fully Covered"}</strong>
         </div>
       </div>
     )
@@ -106,11 +107,11 @@ export default function ThermalProcurementCalculator({
       <div className="card-title-row">
         <div>
           <h2 className="card-title">
-            <Zap size={20} color="var(--accent-amber)" />
-            Day-Ahead Thermal Plant Procurement & Risk Buffer Decision Tool
+            <Zap size={18} color="var(--col-thermal)" />
+            Day-Ahead Thermal Generation Procurement & Risk Buffer Simulator
           </h2>
           <p className="card-description">
-            Quantify how much conventional thermal power to procure on D-1 beyond wind forecasts to satisfy customer demand and avoid costly cash-out imbalance penalties
+            Quantify how much dispatchable thermal power to purchase on D-1 beyond wind forecasts to ensure retail demand is covered
           </p>
         </div>
       </div>
@@ -118,17 +119,17 @@ export default function ThermalProcurementCalculator({
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-        gap: "20px",
-        marginBottom: "24px",
-        background: "rgba(15, 23, 42, 0.5)",
-        padding: "18px",
-        borderRadius: "var(--radius-md)",
+        gap: "16px",
+        marginBottom: "20px",
+        background: "var(--bg-panel)",
+        padding: "16px",
+        borderRadius: "var(--radius-sm)",
         border: "1px solid var(--border-subtle)"
       }}>
         <div>
           <div className="sim-label" style={{ marginBottom: "8px" }}>
             <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Sliders size={14} /> Peak Utility Consumer Demand:
+              <Sliders size={13} /> Peak Utility Consumer Demand:
             </span>
             <strong className="sim-val">{baseDemand.toLocaleString()} MW</strong>
           </div>
@@ -142,20 +143,20 @@ export default function ThermalProcurementCalculator({
             className="range-slider"
           />
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "var(--text-dim)", marginTop: "4px" }}>
-            <span>15,000 MW</span>
-            <span>30,000 MW (Standard UK)</span>
-            <span>45,000 MW</span>
+            <span>15 GW</span>
+            <span>28 GW (Typical GB Mid-Winter)</span>
+            <span>45 GW</span>
           </div>
         </div>
 
         <div>
           <div className="sim-label" style={{ marginBottom: "8px" }}>
             <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <ShieldCheck size={14} color="var(--accent-cyan)" /> Reliability Confidence Hedging Level:
+              <ShieldCheck size={13} color="var(--col-wind-da)" /> Reliability Confidence Hedging Target:
             </span>
             <strong className="sim-val">{(confidenceLevel * 100).toFixed(0)}%</strong>
           </div>
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "6px" }}>
             {[
               { val: 0.50, label: "50% (Neutral)" },
               { val: 0.75, label: "75% (Moderate)" },
@@ -168,11 +169,11 @@ export default function ThermalProcurementCalculator({
                 style={{
                   flex: 1,
                   fontSize: "11px",
-                  padding: "8px 4px",
+                  padding: "6px 2px",
                   justifyContent: "center",
-                  background: confidenceLevel === lvl.val ? "rgba(6, 182, 212, 0.2)" : undefined,
-                  borderColor: confidenceLevel === lvl.val ? "var(--accent-cyan)" : undefined,
-                  color: confidenceLevel === lvl.val ? "#fff" : undefined
+                  background: confidenceLevel === lvl.val ? "var(--bg-surface)" : undefined,
+                  borderColor: confidenceLevel === lvl.val ? "var(--border-strong)" : undefined,
+                  fontWeight: confidenceLevel === lvl.val ? 600 : 400
                 }}
                 onClick={() => onConfidenceChange(lvl.val)}
               >
@@ -182,15 +183,15 @@ export default function ThermalProcurementCalculator({
           </div>
         </div>
 
-        <div className="sim-box" style={{ background: "rgba(6, 182, 212, 0.08)", borderColor: "rgba(6, 182, 212, 0.3)" }}>
-          <span style={{ fontSize: "11px", color: "var(--accent-cyan)", fontWeight: 600, textTransform: "uppercase" }}>
-            Recommended Wind Risk Buffer
+        <div className="sim-box" style={{ borderLeft: "3px solid var(--col-thermal)" }}>
+          <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Recommended Thermal Risk Buffer
           </span>
-          <div style={{ fontSize: "22px", fontWeight: 700, color: "#fff" }}>
-            +{recommendedBufferMW?.toLocaleString()} <span style={{ fontSize: "14px", color: "var(--text-muted)" }}>MW</span>
+          <div style={{ fontSize: "20px", fontWeight: 700 }} className="mono">
+            +{recommendedBufferMW?.toLocaleString()} <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 400 }}>MW</span>
           </div>
-          <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-            Derived from empirical error distribution to absorb unexpected wind drop-outs
+          <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>
+            Sized from empirical error percentiles to prevent cash-out exposure
           </span>
         </div>
       </div>
@@ -198,13 +199,13 @@ export default function ThermalProcurementCalculator({
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "14px",
-        marginBottom: "20px"
+        gap: "12px",
+        marginBottom: "16px"
       }}>
         <div className="sim-box">
           <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>Naive Day-Ahead Deficit Risk</span>
-          <strong style={{ fontSize: "16px", color: unhedgedDeficitPeriods > 0 ? "#fb7185" : "#10b981" }}>
-            {unhedgedDeficitPeriods} / 48 periods ({totalUnhedgedDeficitMWh.toLocaleString()} MWh short)
+          <strong className="mono" style={{ fontSize: "15px", color: unhedgedDeficitPeriods > 0 ? "var(--col-over-risk)" : "var(--col-surplus)" }}>
+            {unhedgedDeficitPeriods} / 48 periods ({totalUnhedgedDeficitMWh.toLocaleString()} MWh)
           </strong>
           <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
             Exposed to cash-out imbalance surcharge
@@ -213,11 +214,11 @@ export default function ThermalProcurementCalculator({
 
         <div className="sim-box">
           <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>Hedged Deficit Risk (w/ Buffer)</span>
-          <strong style={{ fontSize: "16px", color: hedgedDeficitPeriods === 0 ? "#34d399" : "#fbbf24" }}>
-            {hedgedDeficitPeriods} / 48 periods ({totalHedgedDeficitMWh.toLocaleString()} MWh short)
+          <strong className="mono" style={{ fontSize: "15px", color: hedgedDeficitPeriods === 0 ? "var(--col-surplus)" : "var(--col-over-risk)" }}>
+            {hedgedDeficitPeriods} / 48 periods ({totalHedgedDeficitMWh.toLocaleString()} MWh)
           </strong>
           <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-            {((1 - (totalHedgedDeficitMWh / (totalUnhedgedDeficitMWh || 1))) * 100).toFixed(0)}% risk reduction
+            {((1 - (totalHedgedDeficitMWh / (totalUnhedgedDeficitMWh || 1))) * 100).toFixed(0)}% exposure reduction
           </span>
         </div>
       </div>
@@ -225,7 +226,7 @@ export default function ThermalProcurementCalculator({
       <div style={{ width: "100%", height: 350 }}>
         <ResponsiveContainer>
           <AreaChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+            <CartesianGrid strokeDasharray="2 2" stroke="var(--border-subtle)" vertical={false} />
             <XAxis dataKey="timeLabel" stroke="var(--text-dim)" tick={{ fontSize: 11 }} interval={3} />
             <YAxis
               stroke="var(--text-dim)"
@@ -239,34 +240,34 @@ export default function ThermalProcurementCalculator({
               type="monotone"
               dataKey="demandMW"
               name="Consumer Demand"
-              stroke="#94a3b8"
-              fill="#94a3b8"
-              fillOpacity={0.08}
+              stroke="var(--col-demand)"
+              fill="var(--col-demand)"
+              fillOpacity={0.06}
               strokeWidth={1.5}
             />
             <Area
               type="monotone"
               dataKey="hedgedThermalProcuredMW"
               name="Hedged Thermal Procurement (w/ Buffer)"
-              stroke="#fb7185"
-              fill="#fb7185"
-              fillOpacity={0.15}
+              stroke="var(--col-over-risk)"
+              fill="var(--col-over-risk)"
+              fillOpacity={0.12}
               strokeWidth={2}
             />
             <Line
               type="monotone"
               dataKey="baseThermalProcuredMW"
               name="Base Thermal (Naive Demand - Wind Forecast)"
-              stroke="#f59e0b"
+              stroke="var(--col-thermal)"
               strokeWidth={2}
-              strokeDasharray="4 4"
+              strokeDasharray="4 3"
               dot={false}
             />
             <Line
               type="monotone"
               dataKey="actualResidualDemandMW"
               name="Actual Residual Thermal Demand (Truth)"
-              stroke="#10b981"
+              stroke="var(--col-wind-act)"
               strokeWidth={2}
               dot={false}
             />

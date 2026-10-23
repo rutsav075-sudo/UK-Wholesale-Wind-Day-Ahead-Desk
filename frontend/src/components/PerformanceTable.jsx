@@ -32,11 +32,11 @@ export default function PerformanceTable({ dailyStats, onSelectDate, selectedDat
       <div className="card-title-row">
         <div>
           <h2 className="card-title">
-            <Calendar size={18} color="var(--accent-cyan)" />
+            <Calendar size={16} color="var(--col-wind-da)" />
             January 2026 Daily Performance & Forecast Error Audit
           </h2>
           <p className="card-description">
-            Complete daily breakdown of forecast metrics across all 31 delivery days. Click any row or inspect button to drill down.
+            Complete daily audit of day-ahead renewable forecasts across all 31 delivery days
           </p>
         </div>
       </div>
@@ -46,28 +46,28 @@ export default function PerformanceTable({ dailyStats, onSelectDate, selectedDat
           <thead>
             <tr>
               <th onClick={() => handleSort("date")} style={{ cursor: "pointer" }}>
-                Delivery Date <ArrowUpDown size={12} style={{ display: "inline" }} />
+                Delivery Date <ArrowUpDown size={11} style={{ display: "inline" }} />
               </th>
               <th onClick={() => handleSort("avgActual")} style={{ cursor: "pointer" }}>
-                Avg Actual <ArrowUpDown size={12} style={{ display: "inline" }} />
+                Avg Actual <ArrowUpDown size={11} style={{ display: "inline" }} />
               </th>
               <th onClick={() => handleSort("avgForecast")} style={{ cursor: "pointer" }}>
-                Avg DA Forecast <ArrowUpDown size={12} style={{ display: "inline" }} />
+                Avg DA Forecast <ArrowUpDown size={11} style={{ display: "inline" }} />
               </th>
               <th onClick={() => handleSort("mae")} style={{ cursor: "pointer" }}>
-                MAE (MW) <ArrowUpDown size={12} style={{ display: "inline" }} />
+                MAE (MW) <ArrowUpDown size={11} style={{ display: "inline" }} />
               </th>
               <th onClick={() => handleSort("rmse")} style={{ cursor: "pointer" }}>
-                RMSE (MW) <ArrowUpDown size={12} style={{ display: "inline" }} />
+                RMSE (MW) <ArrowUpDown size={11} style={{ display: "inline" }} />
               </th>
               <th onClick={() => handleSort("wape")} style={{ cursor: "pointer" }}>
-                WAPE (%) <ArrowUpDown size={12} style={{ display: "inline" }} />
+                WAPE (%) <ArrowUpDown size={11} style={{ display: "inline" }} />
               </th>
               <th onClick={() => handleSort("bias")} style={{ cursor: "pointer" }}>
-                Mean Bias <ArrowUpDown size={12} style={{ display: "inline" }} />
+                Mean Bias <ArrowUpDown size={11} style={{ display: "inline" }} />
               </th>
               <th onClick={() => handleSort("overForecastRatio")} style={{ cursor: "pointer" }}>
-                Over-Forecast % <ArrowUpDown size={12} style={{ display: "inline" }} />
+                Over-Forecast % <ArrowUpDown size={11} style={{ display: "inline" }} />
               </th>
               <th>Action</th>
             </tr>
@@ -79,13 +79,13 @@ export default function PerformanceTable({ dailyStats, onSelectDate, selectedDat
                 <tr
                   key={row.date}
                   style={{
-                    background: isSelected ? "rgba(6, 182, 212, 0.1)" : undefined,
-                    borderLeft: isSelected ? "3px solid var(--accent-cyan)" : undefined
+                    background: isSelected ? "var(--bg-panel-hover)" : undefined,
+                    borderLeft: isSelected ? "3px solid var(--col-wind-da)" : undefined
                   }}
                 >
                   <td className="mono" style={{ fontWeight: 600 }}>{row.date}</td>
-                  <td className="mono" style={{ color: "#10b981" }}>{row.avgActual.toLocaleString()} MW</td>
-                  <td className="mono" style={{ color: "#06b6d4" }}>{row.avgForecast.toLocaleString()} MW</td>
+                  <td className="mono" style={{ color: "var(--col-wind-act)" }}>{row.avgActual.toLocaleString()} MW</td>
+                  <td className="mono" style={{ color: "var(--col-wind-da)" }}>{row.avgForecast.toLocaleString()} MW</td>
                   <td className="mono" style={{ fontWeight: 600 }}>{row.mae.toLocaleString()} MW</td>
                   <td className="mono">{row.rmse.toLocaleString()} MW</td>
                   <td>
@@ -93,25 +93,25 @@ export default function PerformanceTable({ dailyStats, onSelectDate, selectedDat
                       {row.wape}%
                     </span>
                   </td>
-                  <td className="mono" style={{ color: row.bias > 0 ? "#fbbf24" : "#34d399" }}>
+                  <td className="mono" style={{ color: row.bias > 0 ? "var(--col-over-risk)" : "var(--col-surplus)" }}>
                     {row.bias > 0 ? `+${row.bias}` : row.bias} MW
                   </td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                       <div style={{
-                        width: "50px",
-                        height: "6px",
-                        background: "#334155",
-                        borderRadius: "3px",
+                        width: "48px",
+                        height: "4px",
+                        background: "var(--border-strong)",
+                        borderRadius: "2px",
                         overflow: "hidden"
                       }}>
                         <div style={{
                           width: `${row.overForecastRatio}%`,
                           height: "100%",
-                          background: row.overForecastRatio > 70 ? "#f59e0b" : "#10b981"
+                          background: row.overForecastRatio > 70 ? "var(--col-over-risk)" : "var(--col-surplus)"
                         }} />
                       </div>
-                      <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{row.overForecastRatio}%</span>
+                      <span className="mono" style={{ fontSize: "11px", color: "var(--text-muted)" }}>{row.overForecastRatio}%</span>
                     </div>
                   </td>
                   <td>
@@ -120,7 +120,7 @@ export default function PerformanceTable({ dailyStats, onSelectDate, selectedDat
                       style={{ padding: "4px 8px", fontSize: "11px" }}
                       onClick={() => onSelectDate(row.date)}
                     >
-                      <Eye size={12} /> Inspect
+                      <Eye size={11} /> Inspect
                     </button>
                   </td>
                 </tr>
