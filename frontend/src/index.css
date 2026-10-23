@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root {
+  color-scheme: dark;
   --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 
@@ -29,6 +30,7 @@
 }
 
 [data-theme="light"] {
+  color-scheme: light;
   --bg-app: #f4f6f9;
   --bg-surface: #ffffff;
   --bg-panel: #ffffff;
@@ -86,6 +88,23 @@ input, select {
   border-radius: var(--radius-sm);
   padding: 6px 10px;
   font-size: 13px;
+  color-scheme: dark;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] select {
+  color-scheme: light;
+}
+
+option {
+  background-color: #141a24;
+  color: #f1f5f9;
+  padding: 6px 10px;
+}
+
+[data-theme="light"] option {
+  background-color: #ffffff;
+  color: #0f172a;
 }
 
 input:focus, select:focus {
@@ -194,6 +213,21 @@ input:focus, select:focus {
   color: var(--text-main);
   font-weight: 600;
   cursor: pointer;
+  color-scheme: dark;
+}
+
+[data-theme="light"] .control-group select {
+  color-scheme: light;
+}
+
+.control-group select option {
+  background-color: #141a24;
+  color: #f1f5f9;
+}
+
+[data-theme="light"] .control-group select option {
+  background-color: #ffffff;
+  color: #0f172a;
 }
 
 .theme-toggle-btn {
